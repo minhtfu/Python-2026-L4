@@ -22,11 +22,11 @@ class Student:
 
         points = []
         weights = []
+
         for cid, mark in self.marks.items():
             course = courses.get(cid)
             if course is None:
                 continue
-
             points.append(mark)
             weights.append(course.credits)
 
