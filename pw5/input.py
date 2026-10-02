@@ -1,5 +1,6 @@
 import curses
 from domains import Course, Student
+from storage import save_students, save_courses, save_marks
 
 
 def curses_prompt(stdscr, y, prompt):
@@ -26,8 +27,9 @@ def input_students(stdscr, manager, base_y=0):
         sid = curses_prompt(stdscr, row, f"[{i + 1}] Student ID: ")
         name = curses_prompt(stdscr, row + 1, f"[{i + 1}] Name: ")
         dob = curses_prompt(stdscr, row + 2, f"[{i + 1}] DoB: ")
-
         manager.students[sid] = Student(sid, name, dob)
+
+    save_students(manager)
 
 
 def input_courses(stdscr, manager, base_y=0):
@@ -37,8 +39,9 @@ def input_courses(stdscr, manager, base_y=0):
         cid = curses_prompt(stdscr, row, f"[{i + 1}] Course ID: ")
         name = curses_prompt(stdscr, row + 1, f"[{i + 1}] Name: ")
         credits = int(curses_prompt(stdscr, row + 2, f"[{i + 1}] Credits: "))
-
         manager.courses[cid] = Course(cid, name, credits)
+
+    save_courses(manager)
 
 
 def input_marks(stdscr, manager, base_y=0):
@@ -46,26 +49,23 @@ def input_marks(stdscr, manager, base_y=0):
         stdscr.addstr(base_y, 0, "No courses yet.")
         curses_pause(stdscr, base_y + 1)
         return
-
     y = base_y
-
     stdscr.addstr(y, 0, "--- Courses ---")
     y += 1
-
     for course in manager.courses.values():
         stdscr.addstr(y, 0, str(course))
         y += 1
-
     cid = curses_prompt(stdscr, y + 1, "Select course ID: ")
     if cid not in manager.courses:
         stdscr.addstr(y + 3, 0, "Invalid course.")
         curses_pause(stdscr, y + 4)
         return
     y += 3
-
     for student in manager.students.values():
         mark = float(
             curses_prompt(stdscr, y, f"Mark for {student.name} ({student.sid}): ")
         )
         student.set_mark(cid, mark)
         y += 1
+
+    save_marks(manager)
